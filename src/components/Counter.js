@@ -49,7 +49,7 @@ class Counter extends React.Component {
           <Section parameterFun={this.parameterFun} />
         )}
         <button onClick={() => this.parameterFun("", "", 1)} on>
-          Hello
+          Hello2
         </button>
         <h1>{this.state.count}</h1>
       </>
