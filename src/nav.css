@@ -1,0 +1,15 @@
+* {
+  padding: 0;
+  margin: 0;
+}
+ul {
+  display: flex;
+  list-style-type: none;
+  background-color: brown;
+  column-gap: 10px;
+}
+ul li,
+ul li a {
+  padding: 10px 0;
+  color: white;
+}
