@@ -1,6 +1,8 @@
 import React from "react";
-import { BookDetails } from "./BookDetails";
-
+import BookDetails from "./BookDetails";
+import { BookContext } from "../context/BookContext";
+import { connect } from "react-redux";
+import { addBooks } from "../../redux/actions";
 class Form extends React.Component {
   constructor() {
     super();
@@ -8,13 +10,12 @@ class Form extends React.Component {
       bookName: "",
       bookAuthor: "",
       bookDetails: "",
-      bookArray: [],
     };
   }
 
   handleSubmit = (event) => {
     event.preventDefault();
-    const { bookDetails, bookAuthor, bookName, bookArray } = this.state;
+    const { bookDetails, bookAuthor, bookName } = this.state;
 
     const bookObj = {
       bookDetails,
@@ -22,11 +23,8 @@ class Form extends React.Component {
       bookName,
     };
 
-    const bookArrayClone = [...bookArray];
-    bookArrayClone.push(bookObj);
-
+    this.props.insertBook(bookObj);
     this.setState({
-      bookArray: bookArrayClone,
       bookName: "",
       bookAuthor: "",
       bookDetails: "",
@@ -46,30 +44,48 @@ class Form extends React.Component {
     this.setState({ bookDetails });
   };
   render() {
-    const { bookDetails, bookAuthor, bookName, bookArray } = this.state;
+    const { bookDetails, bookAuthor, bookName } = this.state;
+    console.log(this.props);
     return (
-      <form onSubmit={this.handleSubmit}>
-        Book name -{" "}
-        <input type="text" onChange={this.bookChange} value={bookName} /> <br />
-        <br />
-        Book author -{" "}
-        <input
-          type="text"
-          onChange={this.authorChange}
-          value={bookAuthor}
-        />{" "}
-        <br />
-        <br />
-        Book Details -{" "}
-        <textarea onChange={this.detailsChange} value={bookDetails}></textarea>
-        <br />
-        <br />
-        <button type="submit">Submit</button>
-        <hr />
-        <BookDetails books={bookArray} />
-      </form>
+      <BookContext.Provider value={this.props.booksFromRedux}>
+        <form onSubmit={this.handleSubmit}>
+          Book name -{" "}
+          <input type="text" onChange={this.bookChange} value={bookName} />{" "}
+          <br />
+          <br />
+          Book author -{" "}
+          <input
+            type="text"
+            onChange={this.authorChange}
+            value={bookAuthor}
+          />{" "}
+          <br />
+          <br />
+          Book Details -{" "}
+          <textarea
+            onChange={this.detailsChange}
+            value={bookDetails}
+          ></textarea>
+          <br />
+          <br />
+          <button type="submit">Submit</button>
+          <hr />
+          <BookDetails />
+        </form>
+      </BookContext.Provider>
     );
   }
 }
 
-export default Form;
+const mapDispatchToProps = (dispatch) => {
+  return {
+    insertBook: (book) => dispatch(addBooks(book)),
+  };
+};
+
+const mapStateToProps = (state) => {
+  return {
+    booksFromRedux: state,
+  };
+};
+export default connect(mapStateToProps, mapDispatchToProps)(Form);

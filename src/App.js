@@ -6,13 +6,14 @@ import Home from "./pages/Home";
 import Shop from "./pages/Shop";
 import { Route, Switch } from "react-router-dom";
 import Samsung from "./pages/Samsung";
+import Form from "./components/Forms/Form";
 export default class App extends Component {
   render() {
     return (
       <div>
         <Nav />
         <Switch>
-          <Route path="/" exact component={Home} />
+          <Route path="/" exact component={Form} />
           <Route path="/about" component={About} />
           <Route path="/shop" exact component={Shop} />
           <Route

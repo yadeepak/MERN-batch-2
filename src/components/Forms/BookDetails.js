@@ -1,5 +1,6 @@
 import React from "react";
-
+import BookMoreDetails from "./BookMoreDetails";
+import { connect } from "react-redux";
 // export function BookDetails(props) {
 //   // props.books => [{},{}]
 //   const { books } = props;
@@ -31,10 +32,10 @@ import React from "react";
 //   );
 // }
 
-export class BookDetails extends React.PureComponent {
+class BookDetails extends React.PureComponent {
   render() {
-    const { books } = this.props;
-    console.log(books);
+    const { booksFromRedux = [] } = this.props;
+    console.log(this.props);
     return (
       <div>
         <table border="1">
@@ -46,8 +47,8 @@ export class BookDetails extends React.PureComponent {
             </tr>
           </thead>
           <tbody>
-            {books.length > 0 &&
-              books.map((book, index) => {
+            {booksFromRedux.length > 0 &&
+              booksFromRedux.map((book, index) => {
                 return (
                   <tr key={index}>
                     <td>{book.bookName}</td>
@@ -58,7 +59,14 @@ export class BookDetails extends React.PureComponent {
               })}
           </tbody>
         </table>
+        <BookMoreDetails />
       </div>
     );
   }
 }
+
+function mapStateToProps(reduxState) {
+  const obj = { booksFromRedux: reduxState };
+  return obj;
+}
+export default connect(mapStateToProps)(BookDetails);
