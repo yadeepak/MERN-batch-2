@@ -36,6 +36,7 @@ class FormWithUncontrolled extends React.Component {
     console.log("cdm", this.bookName);
     this.bookName.focus();
     this.bookName.value = "dkfkb";
+    this.bookName.style.color = "white";
   }
 
   render() {

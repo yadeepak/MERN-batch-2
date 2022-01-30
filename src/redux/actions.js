@@ -5,9 +5,16 @@ export function addBooks(book) {
   };
 }
 
-function deleteBooks(books) {
+export function initBooks(books) {
   return {
-    type: "DELETE_BOOKS",
+    type: "INIT_BOOKS",
     payload: books,
+  };
+}
+
+export function deleteBook(bookId) {
+  return {
+    type: "DELETE_BOOK",
+    payload: bookId,
   };
 }

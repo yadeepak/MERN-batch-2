@@ -2,7 +2,10 @@ import React from "react";
 import BookDetails from "./BookDetails";
 import { BookContext } from "../context/BookContext";
 import { connect } from "react-redux";
-import { addBooks } from "../../redux/actions";
+import { addBooks, initBooks } from "../../redux/actions";
+import BookNameWithHooks from "./BookNameWithHooks";
+import axios from "axios";
+
 class Form extends React.Component {
   constructor() {
     super();
@@ -13,22 +16,29 @@ class Form extends React.Component {
     };
   }
 
-  handleSubmit = (event) => {
+  handleSubmit = async (event) => {
     event.preventDefault();
     const { bookDetails, bookAuthor, bookName } = this.state;
-
+    if (!bookName) {
+      alert("bookname is required");
+      return;
+    }
     const bookObj = {
       bookDetails,
       bookAuthor,
       bookName,
     };
-
-    this.props.insertBook(bookObj);
-    this.setState({
-      bookName: "",
-      bookAuthor: "",
-      bookDetails: "",
-    });
+    const { data } = await axios.post("http://localhost:3002/addbook", bookObj);
+    if (data.success) {
+      this.props.insertBook(bookObj);
+      this.setState({
+        bookName: "",
+        bookAuthor: "",
+        bookDetails: "",
+      });
+    } else {
+      alert(data.message);
+    }
   };
 
   bookChange = (event) => {
@@ -43,9 +53,14 @@ class Form extends React.Component {
     const bookDetails = event.target.value;
     this.setState({ bookDetails });
   };
+
+  componentDidMount() {
+    console.log(this.props);
+  }
+
   render() {
     const { bookDetails, bookAuthor, bookName } = this.state;
-    console.log(this.props);
+    // console.log(this.props);
     return (
       <BookContext.Provider value={this.props.booksFromRedux}>
         <form onSubmit={this.handleSubmit}>
@@ -70,7 +85,7 @@ class Form extends React.Component {
           <br />
           <button type="submit">Submit</button>
           <hr />
-          <BookDetails />
+          {/* <BookNameWithHooks /> */}
         </form>
       </BookContext.Provider>
     );
@@ -80,6 +95,7 @@ class Form extends React.Component {
 const mapDispatchToProps = (dispatch) => {
   return {
     insertBook: (book) => dispatch(addBooks(book)),
+    initBooks: (books) => dispatch(initBooks(books)),
   };
 };
 

@@ -1,17 +1,14 @@
-import React from "react";
+import React, { useContext } from "react";
 import { BookContext } from "../context/BookContext";
 function BookMoreDetails() {
+  const data = useContext(BookContext);
   return (
-    <BookContext.Consumer>
-      {(data) => (
-        <div>
-          {data.length > 0 &&
-            data.map((book, index) => {
-              return <h1>{book.bookName}</h1>;
-            })}
-        </div>
-      )}
-    </BookContext.Consumer>
+    <div>
+      {data.length > 0 &&
+        data.map((book, index) => {
+          return <h1>{book.bookName}</h1>;
+        })}
+    </div>
   );
 }
 export default BookMoreDetails;

@@ -9,6 +9,9 @@ export default function Nav() {
           <Link to="/">Home</Link>
         </li>
         <li>
+          <Link to="/books">Books</Link>
+        </li>
+        <li>
           <Link to="/about">About</Link>
         </li>
         <li>
@@ -19,6 +22,9 @@ export default function Nav() {
         </li>
         <li>
           <Link to="/shop/samsung/a51">SamSung</Link>
+        </li>{" "}
+        <li>
+          <Link to="/login">Login</Link>
         </li>{" "}
       </ul>
     </div>
