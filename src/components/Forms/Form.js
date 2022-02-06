@@ -28,9 +28,35 @@ class Form extends React.Component {
       bookAuthor,
       bookName,
     };
+
+    const bookId = this.props.location.state?.bookId;
+    if (bookId) {
+      //edit part
+      this.updateBookDetails(bookObj, bookId);
+    } else {
+      this.addBookInDb(bookObj);
+    }
+  };
+
+  updateBookDetails = async (bookObj, bookId) => {
+    const { data } = await axios.put(
+      `http://localhost:3002/updateBookById/${bookId}`,
+      bookObj
+    );
+    console.log(data, "updated");
+  };
+
+  addBookInDb = async (bookObj) => {
+    if (this.props.booksFromRedux.length === 0) {
+      const { data } = await axios.get("http://localhost:3002/getbooks");
+      if (data) {
+        this.props.initBooks(data);
+      }
+    }
+
     const { data } = await axios.post("http://localhost:3002/addbook", bookObj);
     if (data.success) {
-      this.props.insertBook(bookObj);
+      this.props.insertBook(data.addedData); //redux insert
       this.setState({
         bookName: "",
         bookAuthor: "",
@@ -54,13 +80,21 @@ class Form extends React.Component {
     this.setState({ bookDetails });
   };
 
-  componentDidMount() {
-    console.log(this.props);
+  async componentDidMount() {
+    const bookId = this.props.location.state?.bookId;
+    if (bookId) {
+      //api call
+      const { data } = await axios.get(
+        "http://localhost:3002/getBookById/" + bookId
+      );
+      delete data._id;
+      this.setState(data);
+    }
   }
 
   render() {
     const { bookDetails, bookAuthor, bookName } = this.state;
-    // console.log(this.props);
+    console.log(this.state);
     return (
       <BookContext.Provider value={this.props.booksFromRedux}>
         <form onSubmit={this.handleSubmit}>

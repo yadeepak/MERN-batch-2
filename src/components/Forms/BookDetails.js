@@ -9,10 +9,11 @@ export function BookDetails(props) {
   const dispatch = useDispatch();
   const history = useHistory();
   useEffect(() => {
-    fetchData();
+    books.length === 0 && fetchData();
   }, []);
 
   const fetchData = async () => {
+    console.log("api call");
     const { data } = await axios.get("http://localhost:3002/getbooks");
     if (data) {
       dispatch(initBooks(data));

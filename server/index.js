@@ -26,12 +26,12 @@ app.post("/addbook", (req, res) => {
   try {
     const reqObj = req.body;
     const bookModelObj = new BookModel(reqObj);
-    bookModelObj.save((error) => {
-      // console.log(error.message);
+    bookModelObj.save((error, data) => {
+      console.log(data);
       if (error) {
         res.json({ success: false, message: error.message });
       } else {
-        res.json({ success: true });
+        res.json({ success: true, addedData: data });
       }
     });
   } catch (e) {
@@ -44,6 +44,26 @@ app.get("/getbooks", async (req, res) => {
   const resp = await BookModel.find({}).sort({ description: -1 });
   console.log(resp);
   res.send(JSON.stringify(resp));
+});
+
+app.get("/getBookById/:id", async (req, res) => {
+  const id = req.params.id;
+  const response = await BookModel.findOne({ _id: id }).select({
+    bookName: 1,
+    bookAuthor: 1,
+    bookDetails: 1,
+  });
+  res.json(response);
+});
+
+app.put("/updateBookById/:id", async (req, res) => {
+  const id = req.params.id;
+  const updateObj = req.body;
+  const response = await BookModel.findByIdAndUpdate(id, updateObj, {
+    new: false,
+    upsert: true,
+  });
+  res.json(response);
 });
 
 app.delete("/delete/:id", async (req, res) => {

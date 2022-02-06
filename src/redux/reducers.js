@@ -1,10 +1,4 @@
-export const initialState = [
-  {
-    bookDetails: "book1",
-    bookAuthor: "author1",
-    bookName: "bname1",
-  },
-];
+export const initialState = [];
 
 function bookReducer(state = initialState, action) {
   if (action.type === "ADD_BOOKS") {
