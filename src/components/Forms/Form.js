@@ -13,12 +13,13 @@ class Form extends React.Component {
       bookName: "",
       bookAuthor: "",
       bookDetails: "",
+      file: "",
     };
   }
 
   handleSubmit = async (event) => {
     event.preventDefault();
-    const { bookDetails, bookAuthor, bookName } = this.state;
+    const { bookDetails, bookAuthor, bookName, file } = this.state;
     if (!bookName) {
       alert("bookname is required");
       return;
@@ -27,41 +28,51 @@ class Form extends React.Component {
       bookDetails,
       bookAuthor,
       bookName,
+      file,
     };
+    const formData = new FormData();
+    formData.append("bookDetails", bookDetails);
+    formData.append("bookAuthor", bookAuthor);
+    formData.append("bookName", bookName);
+    formData.append("photo", file);
 
     const bookId = this.props.location.state?.bookId;
     if (bookId) {
       //edit part
       this.updateBookDetails(bookObj, bookId);
     } else {
-      this.addBookInDb(bookObj);
+      this.addBookInDb(formData);
     }
   };
 
   updateBookDetails = async (bookObj, bookId) => {
     const { data } = await axios.put(
-      `http://localhost:3002/updateBookById/${bookId}`,
+      `http://localhost:3022/updateBookById/${bookId}`,
       bookObj
     );
     console.log(data, "updated");
   };
 
-  addBookInDb = async (bookObj) => {
+  addBookInDb = async (formData) => {
     if (this.props.booksFromRedux.length === 0) {
-      const { data } = await axios.get("http://localhost:3002/getbooks");
+      const { data } = await axios.get("http://localhost:3022/getbooks");
       if (data) {
         this.props.initBooks(data);
       }
     }
 
-    const { data } = await axios.post("http://localhost:3002/addbook", bookObj);
+    const { data } = await axios.post(
+      "http://localhost:3022/addbook",
+      formData
+    );
     if (data.success) {
       this.props.insertBook(data.addedData); //redux insert
-      this.setState({
-        bookName: "",
-        bookAuthor: "",
-        bookDetails: "",
-      });
+      // this.setState({
+      //   bookName: "",
+      //   bookAuthor: "",
+      //   bookDetails: "",
+      //   file: "",
+      // });
     } else {
       alert(data.message);
     }
@@ -78,6 +89,11 @@ class Form extends React.Component {
   detailsChange = (event) => {
     const bookDetails = event.target.value;
     this.setState({ bookDetails });
+  };
+  fileChange = (event) => {
+    const file = event.target.files[0];
+    console.log(file, "even");
+    this.setState({ file });
   };
 
   async componentDidMount() {
@@ -97,7 +113,7 @@ class Form extends React.Component {
     console.log(this.state);
     return (
       <BookContext.Provider value={this.props.booksFromRedux}>
-        <form onSubmit={this.handleSubmit}>
+        <form onSubmit={this.handleSubmit} enctype="multipart/form-data">
           Book name -{" "}
           <input type="text" onChange={this.bookChange} value={bookName} />{" "}
           <br />
@@ -115,6 +131,9 @@ class Form extends React.Component {
             onChange={this.detailsChange}
             value={bookDetails}
           ></textarea>
+          <br />
+          <br />
+          <input type="file" name="file" onChange={this.fileChange} />
           <br />
           <br />
           <button type="submit">Submit</button>

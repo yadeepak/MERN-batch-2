@@ -1,4 +1,5 @@
 const Express = require("express");
+const fs = require("fs");
 var bodyParser = require("body-parser");
 var BirdsRouter = require("./newRouter");
 var cors = require("cors");
@@ -6,13 +7,28 @@ var auth = require("basic-auth");
 var jwt = require("jsonwebtoken");
 var mongoose = require("mongoose");
 const BookModel = require("./models/BookModel");
+const multer = require("multer");
+
 const mainUser = { username: "adc@gmail.com", password: "123456" };
 const secretKey = "secret";
 const app = Express();
 app.use(bodyParser.json());
 app.use("/", BirdsRouter);
 app.use(cors());
+app.use("/uploads", Express.static("uploads"));
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "uploads");
+  },
+  filename: function (req, file, cb) {
+    const extention = file.originalname.split(".")[1];
+    const uniqueSuffix =
+      Date.now() + "-" + Math.round(Math.random() * 1e9) + "." + extention;
+    cb(null, file.fieldname + "-" + uniqueSuffix);
+  },
+});
 
+const upload = multer({ storage: storage });
 mongoose
   .connect(
     "mongodb+srv://react-mongo:Mongo%40123%4012@cluster0.bz9wq.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
@@ -22,12 +38,13 @@ mongoose
 
 // BOOK crud
 
-app.post("/addbook", (req, res) => {
+app.post("/addbook", upload.array("photo"), (req, res) => {
   try {
     const reqObj = req.body;
-    const bookModelObj = new BookModel(reqObj);
+    console.log(reqObj, req.file);
+    const bookModelObj = new BookModel({ ...reqObj, image: req.file.filename });
     bookModelObj.save((error, data) => {
-      console.log(data);
+      // console.log(data);
       if (error) {
         res.json({ success: false, message: error.message });
       } else {
@@ -68,6 +85,11 @@ app.put("/updateBookById/:id", async (req, res) => {
 
 app.delete("/delete/:id", async (req, res) => {
   const id = req.params.id;
+  const data = await BookModel.findOne({ _id: id });
+  console.log(data);
+  if (data.image) {
+    fs.unlink("uploads/" + data.image, () => {});
+  }
   const response = await BookModel.deleteOne({ _id: id });
   if (response && response.deletedCount > 0) {
     res.json({ success: true });
@@ -182,5 +204,5 @@ app.get("/hello", (req, res) => {
   ]);
 });
 
-app.listen(3002, () => console.log("server started at 3002"));
+app.listen(3022, () => console.log("server started at 3022"));
 //localhost:3002

@@ -14,7 +14,7 @@ export function BookDetails(props) {
 
   const fetchData = async () => {
     console.log("api call");
-    const { data } = await axios.get("http://localhost:3002/getbooks");
+    const { data } = await axios.get("http://localhost:3022/getbooks");
     if (data) {
       dispatch(initBooks(data));
     }
@@ -27,7 +27,7 @@ export function BookDetails(props) {
     );
     if (isConfirm) {
       const { data } = await axios.delete(
-        `http://localhost:3002/delete/${bookId}`
+        `http://localhost:3022/delete/${bookId}`
       );
       if (data && data.success) {
         dispatch(deleteBook(bookId));
@@ -50,6 +50,7 @@ export function BookDetails(props) {
             <th>Book name</th>
             <th>Book author</th>
             <th>Book Details</th>
+            <th>Book image</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -61,6 +62,12 @@ export function BookDetails(props) {
                   <td>{book.bookName}</td>
                   <td>{book.bookAuthor}</td>
                   <td>{book.bookDetails}</td>
+                  <td>
+                    <img
+                      src={"http://localhost:3022/uploads/" + book.image}
+                      width="200"
+                    />
+                  </td>
                   <td>
                     <button
                       className="btn btn-danger"
